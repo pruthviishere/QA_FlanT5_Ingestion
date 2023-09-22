@@ -1,4 +1,5 @@
 chromadb==0.4.4
-langchain==0.0.299
+langchain==0.0.267
 tqdm==4.66.1
 transformers==4.31.0
+PyMuPDF==1.22.5

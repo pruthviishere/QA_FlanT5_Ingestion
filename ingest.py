@@ -1,10 +1,17 @@
 import os
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+ 
+from langchain.docstore.document import Document
+from langchain.text_splitter import Language, RecursiveCharacterTextSplitter
+from langchain.vectorstores import Chroma
+from chromadb.config import Settings
+
 import glob
 from typing import List
  
 from multiprocessing import Pool
 from tqdm import tqdm
-from chromadb.config import Settings
+import chromadb
 from langchain.document_loaders import (
     CSVLoader,
     EverNoteLoader,
@@ -17,24 +24,13 @@ from langchain.document_loaders import (
     UnstructuredODTLoader,
     UnstructuredPowerPointLoader,
     UnstructuredWordDocumentLoader,
+     
 )
-from langchain.document_loaders import (CSVLoader, PyMuPDFLoader, TextLoader,
-                                        UnstructuredEmailLoader,
-                                        UnstructuredEPubLoader,
-                                        UnstructuredHTMLLoader,
-                                        UnstructuredMarkdownLoader,
-                                        UnstructuredODTLoader,
-                                        UnstructuredPowerPointLoader,
-                                        UnstructuredWordDocumentLoader)
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.docstore.document import Document
-
- 
-import chromadb
-
+from langchain.docstore.document import Document 
 
 # Load environment variables
 persist_directory = "db"
@@ -48,24 +44,6 @@ CHROMA_SETTINGS = Settings(
             anonymized_telemetry=False
     )
 
-# Map file extensions to document loaders and their arguments
-LOADER_MAPPING = {
-    ".csv": (CSVLoader, {}),
-    # ".docx": (Docx2txtLoader, {}),
-    ".doc": (UnstructuredWordDocumentLoader, {}),
-    ".docx": (UnstructuredWordDocumentLoader, {}),
-    ".enex": (EverNoteLoader, {}),
-  
-    ".epub": (UnstructuredEPubLoader, {}),
-    ".html": (UnstructuredHTMLLoader, {}),
-    ".md": (UnstructuredMarkdownLoader, {}),
-    ".odt": (UnstructuredODTLoader, {}),
-    ".pdf": (PyMuPDFLoader, {}),
-    ".ppt": (UnstructuredPowerPointLoader, {}),
-    ".pptx": (UnstructuredPowerPointLoader, {}),
-    ".txt": (TextLoader, {"encoding": "utf8"}),
-    # Add more mappings for other file extensions and loaders as needed
-}
 # Custom document loaders
 class MyElmLoader(UnstructuredEmailLoader):
     """Wrapper to fallback to text/plain when default does not work"""
@@ -87,6 +65,25 @@ class MyElmLoader(UnstructuredEmailLoader):
             raise type(e)(f"{self.file_path}: {e}") from e
 
         return doc
+
+# Map file extensions to document loaders and their arguments
+LOADER_MAPPING = {
+    ".csv": (CSVLoader, {}),
+    # ".docx": (Docx2txtLoader, {}),
+    ".doc": (UnstructuredWordDocumentLoader, {}),
+    ".docx": (UnstructuredWordDocumentLoader, {}),
+    ".enex": (EverNoteLoader, {}),
+    ".eml": (MyElmLoader, {}),
+    ".epub": (UnstructuredEPubLoader, {}),
+    ".html": (UnstructuredHTMLLoader, {}),
+    ".md": (UnstructuredMarkdownLoader, {}),
+    ".odt": (UnstructuredODTLoader, {}),
+    ".pdf": (PyMuPDFLoader, {}),
+    ".ppt": (UnstructuredPowerPointLoader, {}),
+    ".pptx": (UnstructuredPowerPointLoader, {}),
+    ".txt": (TextLoader, {"encoding": "utf8"}),
+    # Add more mappings for other file extensions and loaders as needed
+}
 
 def load_single_document(file_path: str) -> List[Document]:
     ext = "." + file_path.rsplit(".", 1)[-1].lower()
@@ -119,7 +116,7 @@ def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Docum
                 pbar.update()
 
     return results
-  
+
 def process_documents(ignored_files: List[str] = []) -> List[Document]:
     """
     Load documents and split in chunks

@@ -35,10 +35,7 @@ def main():
     Question: {question}
     """
     QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
-
-    # Split the text into chunks using the CharacterTextSplitter
-    text_splitter = CharacterTextSplitter(chunk_size=550, chunk_overlap=0)
-     
+ 
     EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
    
     embeddings = HuggingFaceEmbeddings(model_name= "all-MiniLM-L6-v2")
@@ -59,6 +56,8 @@ def main():
     llm=llm,   
     chain_type="stuff",   
     retriever=retriever ,
+    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
+    callbacks=callbacks,
       return_source_documents= not args.hide_source
     ) 
     while True:
@@ -70,8 +69,6 @@ def main():
 
         # Get the answer from the chain
         start = time.time()
-        # result = qa_chain (  query  ) 
-        # answer = result["result"]
         res = qa_chain(query)
         answer, source_docs = res['result'], [] if args.hide_source else res['source_documents']
         end = time.time()
