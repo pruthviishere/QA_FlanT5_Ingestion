@@ -5,7 +5,7 @@
 
 FLAN-T5 is a Large Language Model open sourced by Google under the Apache license at the end of 2022. It is available in different sizes - see the model card. 🤖
 
-🔗 FLAN-T5 Model
+🔗 FLAN-T5 Model: https://huggingface.co/google/flan-t5-large
 
 In this implementation, I have built a Question Answering System to work with various types of Files and ingest them into Chroma DB to retrieve answers from those documents. Please keep the documents in the data directory. 📂
 
