@@ -11,33 +11,48 @@ In this implementation, I have built a Question Answering System to work with va
 
 
 🚀 Usage
+
   Run the following command to ingest the data files into the database:
   python ingest.py
+  
   Once the ingestion process is complete, you can use the main.py script to search for answers in the ingested documents.
+  
   Provide the path to the data directory as an argument when running main.py:
 
 
 💡 Features
+
   Utilizes FLAN-T5 Large Language Model for question answering
+  
   Ingests various types of files (e.g., PDFs, text files) into a database
+  
   Provides fast response times (approximately 12 seconds)
+  
   Supports zero/few-shot learning for answering questions related to specific industries or subjects
+  
   Can be used offline without requiring internet access
+  
   Minimal hardware requirements for local deployment
 
   
 🔍 Improvement Scope
+
   Performance and answer length can be improved further
+  
   Add support for more file formats
+  
   Integrate with other models or techniques for enhanced performance
-  No Hugging Face API token is required for this implementation 🔒
+  
+  No Hugging Face API token is required for this implementation  
 
   
 🤝 Contributions
+
   Contributions are welcome! Feel free to fork, modify, and submit pull requests with your improvements or suggestions.
 
 
 👍 Acknowledgments
+
   Many thanks to the developers of FLAN-T5 and the Hugging Face Transformers library for their outstanding work. 🙏
 
  
