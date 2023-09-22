@@ -78,8 +78,6 @@ def main():
         print(answer)
         print(f"\n Source Docs : \n",source_docs)
 
-        
- 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='privateGPT: Ask questions to your documents without an internet connection, '
                                                 'using the power of LLMs.')
